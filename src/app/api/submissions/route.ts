@@ -1,10 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { v4 as uuid } from "uuid";
+
+// Map snake_case DB row to camelCase for frontend
+function mapSubmission(row: Record<string, unknown>) {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    weekNumber: row.week_number,
+    taskTitle: row.task_title,
+    proofUrl: row.proof_url,
+    description: row.description,
+    points: row.points,
+    status: row.status,
+    feedback: row.feedback,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    // If user relation is included
+    ...(row.users && typeof row.users === "object"
+      ? { user: row.users }
+      : {}),
+  };
+}
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -15,23 +36,28 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const weekNumber = searchParams.get("week");
 
-  const where: Record<string, unknown> = {};
+  let query = supabase
+    .from("submissions")
+    .select("*, users(name, email)")
+    .order("created_at", { ascending: false });
 
   if (session.user.role !== "admin") {
-    where.userId = session.user.id;
+    query = query.eq("user_id", session.user.id);
   }
 
   if (weekNumber) {
-    where.weekNumber = parseInt(weekNumber);
+    query = query.eq("week_number", parseInt(weekNumber));
   }
 
-  const submissions = await prisma.submission.findMany({
-    where,
-    include: { user: { select: { name: true, email: true } } },
-    orderBy: { createdAt: "desc" },
-  });
+  const { data, error } = await query;
 
-  return NextResponse.json(submissions);
+  if (error) {
+    console.error("Fetch submissions error:", error);
+    return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
+  }
+
+  const mapped = (data || []).map(mapSubmission);
+  return NextResponse.json(mapped);
 }
 
 export async function POST(req: NextRequest) {
@@ -71,19 +97,29 @@ export async function POST(req: NextRequest) {
       proofUrl = `/uploads/${filename}`;
     }
 
-    const submission = await prisma.submission.create({
-      data: {
-        userId: session.user.id,
-        weekNumber,
-        taskTitle,
+    const { data: submission, error } = await supabase
+      .from("submissions")
+      .insert({
+        user_id: session.user.id,
+        week_number: weekNumber,
+        task_title: taskTitle,
         description: description || "",
-        proofUrl,
+        proof_url: proofUrl,
         status: "pending",
         points: 0,
-      },
-    });
+      })
+      .select()
+      .single();
 
-    return NextResponse.json(submission, { status: 201 });
+    if (error) {
+      console.error("Submission insert error:", error);
+      return NextResponse.json(
+        { error: "Failed to create submission" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(mapSubmission(submission), { status: 201 });
   } catch (error) {
     console.error("Submission error:", error);
     return NextResponse.json(

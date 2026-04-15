@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/db";
+import { supabase } from "@/lib/supabase";
 
 export async function PATCH(
   req: NextRequest,
@@ -17,16 +17,39 @@ export async function PATCH(
   try {
     const { status, points, feedback } = await req.json();
 
-    const submission = await prisma.submission.update({
-      where: { id },
-      data: {
-        ...(status && { status }),
-        ...(points !== undefined && { points }),
-        ...(feedback !== undefined && { feedback }),
-      },
-    });
+    const updateData: Record<string, unknown> = {};
+    if (status) updateData.status = status;
+    if (points !== undefined) updateData.points = points;
+    if (feedback !== undefined) updateData.feedback = feedback;
 
-    return NextResponse.json(submission);
+    const { data: submission, error } = await supabase
+      .from("submissions")
+      .update(updateData)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Update submission error:", error);
+      return NextResponse.json(
+        { error: "Failed to update submission" },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      id: submission.id,
+      userId: submission.user_id,
+      weekNumber: submission.week_number,
+      taskTitle: submission.task_title,
+      proofUrl: submission.proof_url,
+      description: submission.description,
+      points: submission.points,
+      status: submission.status,
+      feedback: submission.feedback,
+      createdAt: submission.created_at,
+      updatedAt: submission.updated_at,
+    });
   } catch (error) {
     console.error("Update submission error:", error);
     return NextResponse.json(
