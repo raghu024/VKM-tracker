@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -33,15 +34,8 @@ export default function SignUpPage() {
         return;
       }
 
-      // Auto sign in after signup
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
+      const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
-        setError("Account created but sign-in failed. Please sign in manually.");
         router.push("/auth/signin");
       } else {
         router.push("/dashboard");
@@ -54,29 +48,46 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4">
-      <div className="card-dark w-full max-w-md p-8">
+    <div className="relative flex min-h-[85vh] items-center justify-center px-4">
+      <div className="orb orb-gold absolute right-[10%] top-[10%] h-[400px] w-[400px]" />
+      <div className="orb orb-blue absolute left-[5%] bottom-[20%] h-[300px] w-[300px]" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
+        className="glass w-full max-w-md p-8 sm:p-10"
+      >
         <div className="mb-8 text-center">
-          <div className="glow-gold mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-gold-400/30 bg-gold-400/10">
-            <span className="text-2xl font-bold text-gold-400">V</span>
-          </div>
-          <h1 className="text-gradient-gold text-2xl font-bold">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="glow-gold-subtle mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl border border-gold-400/20 bg-gold-400/10"
+          >
+            <span className="text-2xl font-black text-gold-400">V</span>
+          </motion.div>
+          <h1 className="text-2xl font-black tracking-tight text-white">
             Join the Program
           </h1>
-          <p className="mt-2 text-sm text-dark-400">
-            Create your account and start your 12-week transformation
+          <p className="mt-2 text-sm text-white/30">
+            Start your 12-week transformation
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-lg border border-red-400/20 bg-red-400/10 p-3 text-center text-sm text-red-300">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-5 rounded-2xl border border-red-400/10 bg-red-400/[0.05] p-4 text-center text-sm text-red-300/80"
+          >
             {error}
-          </div>
+          </motion.div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-dark-200">
+            <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-white/30">
               Full Name
             </label>
             <input
@@ -84,13 +95,13 @@ export default function SignUpPage() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full rounded-lg border border-dark-600 bg-dark-900/50 p-3 text-sm text-white placeholder-dark-500 focus:border-gold-400/50 focus:outline-none focus:ring-1 focus:ring-gold-400/50"
+              className="glass-input w-full p-4 text-sm text-white placeholder-white/20"
               placeholder="Your full name"
             />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-dark-200">
+            <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-white/30">
               Email
             </label>
             <input
@@ -98,13 +109,13 @@ export default function SignUpPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full rounded-lg border border-dark-600 bg-dark-900/50 p-3 text-sm text-white placeholder-dark-500 focus:border-gold-400/50 focus:outline-none focus:ring-1 focus:ring-gold-400/50"
+              className="glass-input w-full p-4 text-sm text-white placeholder-white/20"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-dark-200">
+            <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-white/30">
               Password
             </label>
             <input
@@ -113,30 +124,29 @@ export default function SignUpPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full rounded-lg border border-dark-600 bg-dark-900/50 p-3 text-sm text-white placeholder-dark-500 focus:border-gold-400/50 focus:outline-none focus:ring-1 focus:ring-gold-400/50"
+              className="glass-input w-full p-4 text-sm text-white placeholder-white/20"
               placeholder="Minimum 6 characters"
             />
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-gradient-to-r from-gold-600 to-gold-400 py-3 text-sm font-semibold text-dark-950 transition-all hover:from-gold-500 hover:to-gold-300 disabled:opacity-50"
+            className="btn-primary w-full py-4 text-sm uppercase tracking-wide disabled:opacity-50"
           >
             {loading ? "Creating account..." : "Create Account"}
-          </button>
+          </motion.button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-dark-400">
+        <p className="mt-7 text-center text-sm text-white/25">
           Already have an account?{" "}
-          <Link
-            href="/auth/signin"
-            className="font-medium text-gold-400 hover:text-gold-300"
-          >
+          <Link href="/auth/signin" className="font-medium text-gold-400 transition-colors hover:text-gold-300">
             Sign in
           </Link>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

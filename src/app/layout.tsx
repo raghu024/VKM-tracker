@@ -31,11 +31,15 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Animated mesh background */}
+        <div className="mesh-bg" />
+        <div className="noise-overlay" />
+
         <SessionProvider>
           <Navbar />
-          <main className="flex-1">{children}</main>
-          <footer className="border-t border-gold-400/10 py-6 text-center">
-            <p className="text-xs text-dark-500">
+          <main className="relative flex-1">{children}</main>
+          <footer className="relative border-t border-white/[0.04] py-8 text-center">
+            <p className="text-xs tracking-widest text-dark-500 uppercase">
               Unik Life Company | VK & SIP Mentorship Program
             </p>
           </footer>

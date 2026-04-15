@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 import { weeksData } from "@/lib/weeks-data";
 import WeekCard from "@/components/WeekCard";
 
@@ -16,6 +17,16 @@ interface Submission {
   feedback?: string;
 }
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.23, 1, 0.32, 1] as const } },
+};
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06 } },
+};
+
 export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -25,10 +36,7 @@ export default function DashboardPage() {
   const fetchSubmissions = useCallback(async () => {
     try {
       const res = await fetch("/api/submissions");
-      if (res.ok) {
-        const data = await res.json();
-        setSubmissions(data);
-      }
+      if (res.ok) setSubmissions(await res.json());
     } catch (error) {
       console.error("Failed to fetch submissions:", error);
     } finally {
@@ -37,110 +45,104 @@ export default function DashboardPage() {
   }, []);
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/auth/signin");
-    }
-    if (status === "authenticated") {
-      fetchSubmissions();
-    }
+    if (status === "unauthenticated") router.push("/auth/signin");
+    if (status === "authenticated") fetchSubmissions();
   }, [status, router, fetchSubmissions]);
 
   if (status === "loading" || loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <svg className="h-10 w-10 animate-spin text-gold-400" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-        </svg>
+        <div className="relative">
+          <div className="h-12 w-12 rounded-full border-2 border-white/[0.06]" />
+          <div className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-2 border-transparent border-t-gold-400" />
+        </div>
       </div>
     );
   }
 
   if (!session) return null;
 
-  const totalEarned = submissions
-    .filter((s) => s.status === "approved")
-    .reduce((sum, s) => sum + s.points, 0);
-
+  const totalEarned = submissions.filter((s) => s.status === "approved").reduce((sum, s) => sum + s.points, 0);
   const totalPossible = weeksData.reduce((sum, w) => sum + w.maxPoints, 0);
-
   const approvedCount = submissions.filter((s) => s.status === "approved").length;
   const pendingCount = submissions.filter((s) => s.status === "pending").length;
-  const weeksWithApproval = new Set(
-    submissions.filter((s) => s.status === "approved").map((s) => s.weekNumber)
-  ).size;
+  const weeksWithApproval = new Set(submissions.filter((s) => s.status === "approved").map((s) => s.weekNumber)).size;
+  const progressPct = Math.round((totalEarned / totalPossible) * 100);
+
+  const stats = [
+    { value: totalEarned, label: "Points", sub: `/ ${totalPossible}`, color: "text-gold-400" },
+    { value: approvedCount, label: "Approved", sub: "tasks", color: "text-green-400" },
+    { value: pendingCount, label: "Pending", sub: "review", color: "text-yellow-400" },
+    { value: weeksWithApproval, label: "Weeks", sub: "/ 12", color: "text-blue-400" },
+  ];
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">
-          Welcome back,{" "}
-          <span className="text-gradient-gold">{session.user.name}</span>
-        </h1>
-        <p className="mt-1 text-dark-400">
-          Track your 12-week transformation journey
-        </p>
-      </div>
+    <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <div className="orb orb-gold absolute -right-40 top-0 h-[400px] w-[400px]" />
 
-      {/* Stats Grid */}
-      <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <div className="card-dark p-4 text-center">
-          <p className="text-2xl font-bold text-gold-400">{totalEarned}</p>
-          <p className="mt-1 text-xs text-dark-400">
-            Points Earned / {totalPossible}
+      <motion.div initial="hidden" animate="visible" variants={stagger}>
+        {/* Header */}
+        <motion.div variants={fadeUp} className="mb-10">
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.3em] text-gold-400/50">Dashboard</p>
+          <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
+            Welcome back,{" "}
+            <span className="text-gradient-gold">{session.user.name}</span>
+          </h1>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <motion.div variants={fadeUp} className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {stats.map((stat) => (
+            <motion.div
+              key={stat.label}
+              whileHover={{ y: -4, transition: { duration: 0.2 } }}
+              className="glass p-5 text-center"
+            >
+              <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
+              <p className="mt-1 text-[11px] uppercase tracking-widest text-white/25">
+                {stat.label} <span className="text-white/15">{stat.sub}</span>
+              </p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Overall Progress */}
+        <motion.div variants={fadeUp} className="glass mb-10 p-6">
+          <div className="mb-3 flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-widest text-white/30">
+              Overall Progress
+            </span>
+            <span className="text-2xl font-black text-white">
+              {progressPct}<span className="text-sm text-white/30">%</span>
+            </span>
+          </div>
+          <div className="progress-bar h-2">
+            <motion.div
+              className="progress-fill h-2"
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPct}%` }}
+              transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
+            />
+          </div>
+        </motion.div>
+
+        {/* Week Cards */}
+        <motion.div variants={fadeUp}>
+          <p className="mb-5 text-xs font-medium uppercase tracking-[0.3em] text-white/25">
+            Weekly Sessions
           </p>
-        </div>
-        <div className="card-dark p-4 text-center">
-          <p className="text-2xl font-bold text-green-400">{approvedCount}</p>
-          <p className="mt-1 text-xs text-dark-400">Tasks Approved</p>
-        </div>
-        <div className="card-dark p-4 text-center">
-          <p className="text-2xl font-bold text-yellow-400">{pendingCount}</p>
-          <p className="mt-1 text-xs text-dark-400">Pending Review</p>
-        </div>
-        <div className="card-dark p-4 text-center">
-          <p className="text-2xl font-bold text-blue-400">
-            {weeksWithApproval}
-          </p>
-          <p className="mt-1 text-xs text-dark-400">Weeks Completed</p>
-        </div>
-      </div>
-
-      {/* Overall Progress */}
-      <div className="card-dark mb-8 p-5">
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-sm font-medium text-dark-200">
-            Overall Progress
-          </span>
-          <span className="text-sm font-bold text-gold-400">
-            {Math.round((totalEarned / totalPossible) * 100)}%
-          </span>
-        </div>
-        <div className="h-3 overflow-hidden rounded-full bg-dark-700">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-gold-600 to-gold-400 transition-all duration-1000"
-            style={{
-              width: `${(totalEarned / totalPossible) * 100}%`,
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Week Cards */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-white">Weekly Sessions</h2>
-        {weeksData.map((week) => (
-          <WeekCard
-            key={week.week}
-            week={week}
-            submissions={submissions.filter(
-              (s) => s.weekNumber === week.week
-            )}
-            onSubmitted={fetchSubmissions}
-          />
-        ))}
-      </div>
+          <div className="space-y-4">
+            {weeksData.map((week) => (
+              <WeekCard
+                key={week.week}
+                week={week}
+                submissions={submissions.filter((s) => s.weekNumber === week.week)}
+                onSubmitted={fetchSubmissions}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
