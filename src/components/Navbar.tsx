@@ -17,22 +17,22 @@ export default function Navbar() {
       className="glass-nav sticky top-0 z-50"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-18 items-center justify-between">
+        <div className="flex h-16 items-center justify-between sm:h-18">
           {/* Logo */}
           <Link href="/" className="group flex items-center gap-3">
             <motion.div
-              whileHover={{ scale: 1.05, rotate: 2 }}
+              whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
-              className="flex h-10 w-10 items-center justify-center rounded-xl border border-gold-400/20 bg-gold-400/10 transition-colors group-hover:border-gold-400/40 group-hover:bg-gold-400/15"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 shadow-[0_0_20px_rgba(255,186,0,0.2)]"
             >
-              <span className="text-lg font-bold text-gold-400">V</span>
+              <span className="text-lg font-black text-black">V</span>
             </motion.div>
             <div>
-              <span className="text-gradient-gold text-lg font-bold tracking-wide">
+              <span className="text-gradient-gold text-lg font-black tracking-wide">
                 VK & SIP
               </span>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
-                Mentorship Program
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/25">
+                Mentorship
               </p>
             </div>
           </Link>
@@ -54,7 +54,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="relative rounded-xl px-4 py-2 text-sm text-white/50 transition-all duration-300 hover:bg-white/[0.04] hover:text-white"
+                className="relative rounded-lg px-4 py-2 text-sm font-medium text-white/50 transition-all duration-300 hover:bg-white/[0.05] hover:text-white"
               >
                 {link.label}
               </Link>
@@ -65,13 +65,13 @@ export default function Navbar() {
           <div className="hidden items-center gap-3 md:flex">
             {session ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2.5 rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1.5">
+                <div className="flex items-center gap-2.5 rounded-full border border-white/[0.08] bg-surface-2 px-4 py-1.5">
                   <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-gold-400 to-gold-600">
-                    <span className="text-xs font-bold text-dark-950">
+                    <span className="text-xs font-black text-black">
                       {session.user.name?.[0]?.toUpperCase()}
                     </span>
                   </div>
-                  <span className="text-sm text-white/70">
+                  <span className="text-sm font-medium text-white/80">
                     {session.user.name}
                   </span>
                 </div>
@@ -79,7 +79,7 @@ export default function Navbar() {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => signOut()}
-                  className="rounded-xl border border-white/[0.06] px-4 py-2 text-sm text-white/50 transition-all duration-300 hover:border-white/10 hover:text-white"
+                  className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-4 py-2 text-sm font-medium text-white/50 transition-all duration-300 hover:border-white/15 hover:text-white"
                 >
                   Sign Out
                 </motion.button>
@@ -88,7 +88,7 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/auth/signin"
-                  className="rounded-xl px-4 py-2 text-sm text-white/50 transition-all hover:text-white"
+                  className="rounded-lg px-4 py-2 text-sm font-medium text-white/50 transition-all hover:text-white"
                 >
                   Sign In
                 </Link>
@@ -109,13 +109,13 @@ export default function Navbar() {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="rounded-xl p-2 text-white/50 md:hidden hover:bg-white/[0.04]"
+            className="rounded-lg p-2 text-white/50 md:hidden hover:bg-white/[0.05]"
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {mobileOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               )}
             </svg>
           </motion.button>
@@ -129,24 +129,24 @@ export default function Navbar() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
-              className="overflow-hidden border-t border-white/[0.04] md:hidden"
+              className="overflow-hidden border-t border-white/[0.06] md:hidden"
             >
-              <div className="space-y-1 py-3">
-                <Link href="/" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-2.5 text-sm text-white/50 hover:bg-white/[0.04] hover:text-white">Home</Link>
+              <div className="space-y-1 py-4">
+                <Link href="/" onClick={() => setMobileOpen(false)} className="block rounded-lg px-4 py-3 text-sm font-medium text-white/60 hover:bg-white/[0.05] hover:text-white">Home</Link>
                 {session && (
                   <>
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-2.5 text-sm text-white/50 hover:bg-white/[0.04] hover:text-white">Dashboard</Link>
-                    <Link href="/leaderboard" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-2.5 text-sm text-white/50 hover:bg-white/[0.04] hover:text-white">Leaderboard</Link>
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block rounded-lg px-4 py-3 text-sm font-medium text-white/60 hover:bg-white/[0.05] hover:text-white">Dashboard</Link>
+                    <Link href="/leaderboard" onClick={() => setMobileOpen(false)} className="block rounded-lg px-4 py-3 text-sm font-medium text-white/60 hover:bg-white/[0.05] hover:text-white">Leaderboard</Link>
                     {session.user.role === "admin" && (
-                      <Link href="/admin" onClick={() => setMobileOpen(false)} className="block rounded-xl px-4 py-2.5 text-sm text-white/50 hover:bg-white/[0.04] hover:text-white">Admin</Link>
+                      <Link href="/admin" onClick={() => setMobileOpen(false)} className="block rounded-lg px-4 py-3 text-sm font-medium text-white/60 hover:bg-white/[0.05] hover:text-white">Admin</Link>
                     )}
-                    <button onClick={() => signOut()} className="mt-2 block w-full rounded-xl border border-white/[0.06] px-4 py-2.5 text-left text-sm text-white/50 hover:bg-white/[0.04]">Sign Out</button>
+                    <button onClick={() => signOut()} className="mt-2 block w-full rounded-lg border border-white/[0.06] px-4 py-3 text-left text-sm text-white/50 hover:bg-white/[0.05]">Sign Out</button>
                   </>
                 )}
                 {!session && (
-                  <div className="mt-2 flex gap-2 px-4">
-                    <Link href="/auth/signin" className="rounded-xl px-4 py-2 text-sm text-white/50">Sign In</Link>
-                    <Link href="/auth/signup" className="btn-primary rounded-xl px-4 py-2 text-sm">Get Started</Link>
+                  <div className="mt-3 flex gap-2 px-4">
+                    <Link href="/auth/signin" className="rounded-lg px-4 py-2.5 text-sm text-white/50">Sign In</Link>
+                    <Link href="/auth/signup" className="btn-primary rounded-lg px-5 py-2.5 text-sm">Get Started</Link>
                   </div>
                 )}
               </div>

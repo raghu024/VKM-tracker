@@ -52,10 +52,14 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
     <>
       <motion.div
         layout
-        className="glass-gold overflow-hidden"
+        className={`overflow-hidden rounded-2xl border transition-all ${
+          progress === 100
+            ? "border-neon-lime/20 bg-gradient-to-r from-[#0d0d1a] to-[#0a1a0a]"
+            : "border-gold-400/10 bg-gradient-to-r from-[#0d0d1a] to-[#15120a]"
+        }`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+        transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] as const }}
       >
         {/* Header */}
         <button
@@ -65,14 +69,14 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
           <div className="flex items-center gap-4">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl border text-lg font-bold transition-all duration-300 ${
+              className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border text-lg font-black transition-all duration-300 ${
                 progress === 100
-                  ? "border-green-400/30 bg-green-400/10 text-green-400 shadow-[0_0_20px_rgba(74,222,128,0.1)]"
-                  : "border-gold-400/20 bg-gold-400/[0.07] text-gold-400"
+                  ? "border-neon-lime/30 bg-neon-lime/10 text-neon-lime shadow-[0_0_25px_rgba(57,255,20,0.1)]"
+                  : "border-gold-400/20 bg-gold-400/[0.06] text-gold-400"
               }`}
             >
               {progress === 100 ? (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                 </svg>
               ) : (
@@ -92,17 +96,17 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
 
           <div className="flex items-center gap-4">
             <span
-              className={`hidden rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider sm:inline-block ${
+              className={`hidden rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider sm:inline-block ${
                 week.sessionType === "Group Session"
-                  ? "bg-blue-500/10 text-blue-300/60"
-                  : "bg-purple-500/10 text-purple-300/60"
+                  ? "bg-neon-cyan/[0.06] text-neon-cyan/60 border border-neon-cyan/10"
+                  : "bg-neon-purple/[0.06] text-neon-purple/60 border border-neon-purple/10"
               }`}
             >
               {week.sessionType === "Group Session" ? "Group" : "1-on-1"}
             </span>
 
             <div className="text-right">
-              <span className="text-xl font-black text-gold-400">
+              <span className="text-2xl font-black text-gold-400">
                 {earnedPoints}
               </span>
               <span className="text-xs text-white/20">/{week.maxPoints}</span>
@@ -110,9 +114,9 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
 
             <motion.div
               animate={{ rotate: expanded ? 180 : 0 }}
-              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] as const }}
             >
-              <svg className="h-5 w-5 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-5 w-5 text-white/25" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
               </svg>
             </motion.div>
@@ -123,16 +127,16 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
         <div className="px-5 pb-4">
           <div className="progress-bar">
             <motion.div
-              className="progress-fill"
+              className={progress === 100 ? "h-full rounded-full bg-gradient-to-r from-green-500 to-neon-lime shadow-[0_0_12px_rgba(57,255,20,0.4)]" : "progress-fill"}
               initial={{ width: 0 }}
               animate={{ width: `${progress}%` }}
-              transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] as const }}
             />
           </div>
-          <div className="mt-1.5 flex justify-between text-[11px] text-white/25">
+          <div className="mt-2 flex justify-between text-[11px] text-white/25">
             <span>{completedTasks.length}/{week.tasks.length} tasks</span>
             {pendingTasks.length > 0 && (
-              <span className="text-yellow-400/60">{pendingTasks.length} pending</span>
+              <span className="text-neon-orange/70">{pendingTasks.length} pending review</span>
             )}
           </div>
         </div>
@@ -144,10 +148,10 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
               className="overflow-hidden"
             >
-              <div className="border-t border-white/[0.04] p-5">
+              <div className="border-t border-white/[0.06] p-5">
                 <div className="space-y-3">
                   {week.tasks.map((task, i) => {
                     const status = getTaskStatus(task);
@@ -158,34 +162,38 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
                         key={i}
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.08, duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                        className="group flex items-start gap-3 rounded-2xl bg-white/[0.02] p-4 transition-colors hover:bg-white/[0.04]"
+                        transition={{ delay: i * 0.08, duration: 0.4, ease: [0.23, 1, 0.32, 1] as const }}
+                        className={`group flex items-start gap-3 rounded-xl p-4 transition-colors ${
+                          status === "approved"
+                            ? "bg-neon-lime/[0.03] border border-neon-lime/10"
+                            : "bg-white/[0.02] border border-transparent hover:bg-white/[0.04]"
+                        }`}
                       >
                         {/* Status Icon */}
                         <div className="mt-0.5 flex-shrink-0">
                           {status === "approved" && (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-500/15 text-green-400 shadow-[0_0_10px_rgba(74,222,128,0.1)]">
-                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-neon-lime/15 text-neon-lime shadow-[0_0_12px_rgba(57,255,20,0.1)]">
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                               </svg>
                             </div>
                           )}
                           {status === "pending" && (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-400">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-neon-orange/15 text-neon-orange">
                               <svg className="h-4 w-4 animate-spin" style={{ animationDuration: "3s" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
                             </div>
                           )}
                           {status === "rejected" && (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-red-500/15 text-red-400">
-                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-neon-pink/15 text-neon-pink">
+                              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </div>
                           )}
                           {status === "not_submitted" && (
-                            <div className="flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.02] text-white/20">
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.08] bg-surface-2 text-white/25">
                               <span className="text-[11px] font-bold">{i + 1}</span>
                             </div>
                           )}
@@ -193,17 +201,17 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
 
                         {/* Task Content */}
                         <div className="flex-1 min-w-0">
-                          <p className={`text-sm leading-relaxed ${status === "approved" ? "text-green-300/80" : "text-white/60"}`}>
+                          <p className={`text-sm font-medium leading-relaxed ${status === "approved" ? "text-neon-lime/80" : "text-white/60"}`}>
                             {task}
                           </p>
                           {submission?.feedback && (
-                            <div className="mt-2 rounded-xl bg-white/[0.03] p-3 text-xs text-white/40">
-                              <span className="font-semibold text-gold-400/70">Feedback:</span>{" "}
+                            <div className="mt-2 rounded-lg border border-gold-400/10 bg-gold-400/[0.03] p-3 text-xs text-white/40">
+                              <span className="font-bold text-gold-400/80">Feedback:</span>{" "}
                               {submission.feedback}
                             </div>
                           )}
                           {status === "approved" && submission && (
-                            <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-semibold text-gold-400/60">
+                            <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-bold text-gold-400">
                               +{submission.points} pts
                             </span>
                           )}
@@ -215,7 +223,7 @@ export default function WeekCard({ week, submissions, onSubmitted }: WeekCardPro
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => setUploadTask(task)}
-                            className="btn-primary flex-shrink-0 px-4 py-2 text-xs tracking-wide uppercase"
+                            className="btn-primary flex-shrink-0 px-5 py-2.5 text-xs tracking-wide uppercase"
                           >
                             {status === "rejected" ? "Retry" : "Upload"}
                           </motion.button>

@@ -18,13 +18,13 @@ interface Submission {
 }
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.23, 1, 0.32, 1] as const } },
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] as const } },
 };
 
 const stagger = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.06 } },
+  visible: { transition: { staggerChildren: 0.08 } },
 };
 
 export default function DashboardPage() {
@@ -53,8 +53,8 @@ export default function DashboardPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="relative">
-          <div className="h-12 w-12 rounded-full border-2 border-white/[0.06]" />
-          <div className="absolute inset-0 h-12 w-12 animate-spin rounded-full border-2 border-transparent border-t-gold-400" />
+          <div className="h-14 w-14 rounded-full border-2 border-white/[0.06]" />
+          <div className="absolute inset-0 h-14 w-14 animate-spin rounded-full border-2 border-transparent border-t-neon-cyan" />
         </div>
       </div>
     );
@@ -70,36 +70,37 @@ export default function DashboardPage() {
   const progressPct = Math.round((totalEarned / totalPossible) * 100);
 
   const stats = [
-    { value: totalEarned, label: "Points", sub: `/ ${totalPossible}`, color: "text-gold-400" },
-    { value: approvedCount, label: "Approved", sub: "tasks", color: "text-green-400" },
-    { value: pendingCount, label: "Pending", sub: "review", color: "text-yellow-400" },
-    { value: weeksWithApproval, label: "Weeks", sub: "/ 12", color: "text-blue-400" },
+    { value: totalEarned, label: "Points", sub: `/ ${totalPossible}`, color: "text-gold-400", borderColor: "border-gold-400/15", bgColor: "bg-gold-400/[0.04]" },
+    { value: approvedCount, label: "Approved", sub: "tasks", color: "text-neon-lime", borderColor: "border-neon-lime/15", bgColor: "bg-neon-lime/[0.04]" },
+    { value: pendingCount, label: "Pending", sub: "review", color: "text-neon-orange", borderColor: "border-neon-orange/15", bgColor: "bg-neon-orange/[0.04]" },
+    { value: weeksWithApproval, label: "Weeks", sub: "/ 12", color: "text-neon-cyan", borderColor: "border-neon-cyan/15", bgColor: "bg-neon-cyan/[0.04]" },
   ];
 
   return (
-    <div className="relative mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <div className="orb orb-gold absolute -right-40 top-0 h-[400px] w-[400px]" />
+    <div className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6">
+      <div className="orb orb-cyan absolute -right-40 top-0 h-[400px] w-[400px]" />
 
       <motion.div initial="hidden" animate="visible" variants={stagger}>
         {/* Header */}
-        <motion.div variants={fadeUp} className="mb-10">
-          <p className="mb-2 text-xs font-medium uppercase tracking-[0.3em] text-gold-400/50">Dashboard</p>
-          <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
+        <motion.div variants={fadeUp} className="mb-12">
+          <span className="tag-cyan mb-4 inline-block">Dashboard</span>
+          <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl">
             Welcome back,{" "}
             <span className="text-gradient-gold">{session.user.name}</span>
           </h1>
         </motion.div>
 
         {/* Stats Grid */}
-        <motion.div variants={fadeUp} className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <motion.div variants={fadeUp} className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
           {stats.map((stat) => (
             <motion.div
               key={stat.label}
-              whileHover={{ y: -4, transition: { duration: 0.2 } }}
-              className="glass p-5 text-center"
+              whileHover={{ y: -6, transition: { duration: 0.2 } }}
+              className={`rounded-2xl border ${stat.borderColor} ${stat.bgColor} bg-surface-1 p-6 text-center transition-all`}
+              style={{ background: "linear-gradient(135deg, #0d0d1a 0%, #111125 100%)" }}
             >
-              <p className={`text-3xl font-black ${stat.color}`}>{stat.value}</p>
-              <p className="mt-1 text-[11px] uppercase tracking-widest text-white/25">
+              <p className={`text-4xl font-black ${stat.color}`}>{stat.value}</p>
+              <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-white/25">
                 {stat.label} <span className="text-white/15">{stat.sub}</span>
               </p>
             </motion.div>
@@ -107,30 +108,35 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Overall Progress */}
-        <motion.div variants={fadeUp} className="glass mb-10 p-6">
-          <div className="mb-3 flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-widest text-white/30">
+        <motion.div variants={fadeUp} className="card mb-12 p-7">
+          <div className="mb-4 flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-widest text-white/30">
               Overall Progress
             </span>
-            <span className="text-2xl font-black text-white">
-              {progressPct}<span className="text-sm text-white/30">%</span>
+            <span className="text-3xl font-black text-white">
+              {progressPct}<span className="text-sm font-bold text-white/30">%</span>
             </span>
           </div>
-          <div className="progress-bar h-2">
+          <div className="progress-bar h-3">
             <motion.div
-              className="progress-fill h-2"
+              className="progress-fill h-3"
               initial={{ width: 0 }}
               animate={{ width: `${progressPct}%` }}
-              transition={{ duration: 1.5, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
+              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
             />
+          </div>
+          <div className="mt-3 flex justify-between text-xs text-white/20">
+            <span>{totalEarned} points earned</span>
+            <span>{totalPossible - totalEarned} points remaining</span>
           </div>
         </motion.div>
 
         {/* Week Cards */}
         <motion.div variants={fadeUp}>
-          <p className="mb-5 text-xs font-medium uppercase tracking-[0.3em] text-white/25">
-            Weekly Sessions
-          </p>
+          <div className="mb-6 flex items-center justify-between">
+            <span className="tag-gold">Weekly Sessions</span>
+            <span className="text-xs font-medium text-white/20">{weeksData.length} weeks</span>
+          </div>
           <div className="space-y-4">
             {weeksData.map((week) => (
               <WeekCard

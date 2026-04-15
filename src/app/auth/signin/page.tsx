@@ -34,28 +34,28 @@ export default function SignInPage() {
 
   return (
     <div className="relative flex min-h-[85vh] items-center justify-center px-4">
-      <div className="orb orb-gold absolute left-[10%] top-[20%] h-[400px] w-[400px]" />
-      <div className="orb orb-purple absolute right-[10%] bottom-[10%] h-[300px] w-[300px]" />
+      <div className="orb orb-cyan absolute left-[10%] top-[15%] h-[400px] w-[400px]" />
+      <div className="orb orb-purple absolute right-[10%] bottom-[10%] h-[350px] w-[350px]" />
 
       <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.96 }}
+        initial={{ opacity: 0, y: 40, scale: 0.95 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
-        className="glass w-full max-w-md p-8 sm:p-10"
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+        className="card w-full max-w-md p-8 sm:p-10"
       >
         <div className="mb-8 text-center">
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-            className="glow-gold-subtle mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-3xl border border-gold-400/20 bg-gold-400/10"
+            className="glow-gold-subtle mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-gold-400 to-gold-600"
           >
-            <span className="text-2xl font-black text-gold-400">V</span>
+            <span className="text-2xl font-black text-black">V</span>
           </motion.div>
           <h1 className="text-2xl font-black tracking-tight text-white">
             Welcome Back
           </h1>
-          <p className="mt-2 text-sm text-white/30">
+          <p className="mt-2 text-sm text-white/35">
             Sign in to continue your journey
           </p>
         </div>
@@ -64,15 +64,15 @@ export default function SignInPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 rounded-2xl border border-red-400/10 bg-red-400/[0.05] p-4 text-center text-sm text-red-300/80"
+            className="mb-5 rounded-xl border border-neon-pink/15 bg-neon-pink/[0.05] p-4 text-center text-sm font-medium text-neon-pink/80"
           >
             {error}
           </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-white/30">
+            <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/30">
               Email
             </label>
             <input
@@ -86,7 +86,7 @@ export default function SignInPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-white/30">
+            <label className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/30">
               Password
             </label>
             <input
@@ -110,9 +110,9 @@ export default function SignInPage() {
           </motion.button>
         </form>
 
-        <p className="mt-7 text-center text-sm text-white/25">
+        <p className="mt-7 text-center text-sm text-white/30">
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="font-medium text-gold-400 transition-colors hover:text-gold-300">
+          <Link href="/auth/signup" className="font-bold text-neon-cyan transition-colors hover:text-neon-cyan/70">
             Sign up
           </Link>
         </p>

@@ -5,7 +5,7 @@ import { weeksData } from "@/lib/weeks-data";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
-/* ── Animated Counter ── */
+/* Animated Counter */
 function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -14,11 +14,11 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   useEffect(() => {
     if (!inView) return;
     let start = 0;
-    const duration = 1500;
+    const duration = 2000;
     const step = (timestamp: number) => {
       if (!start) start = timestamp;
       const progress = Math.min((timestamp - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
+      const eased = 1 - Math.pow(1 - progress, 4);
       setCount(Math.floor(eased * target));
       if (progress < 1) requestAnimationFrame(step);
     };
@@ -28,17 +28,17 @@ function Counter({ target, suffix = "" }: { target: number; suffix?: string }) {
   return <span ref={ref}>{count}{suffix}</span>;
 }
 
-/* ── Section Reveal Wrapper ── */
-function Reveal({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+/* Scroll-triggered Reveal */
+function Reveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-15%" });
+  const inView = useInView(ref, { once: true, margin: "-10%" });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 80 }}
+      initial={{ opacity: 0, y: 60 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay }}
       className={className}
     >
       {children}
@@ -52,59 +52,59 @@ export default function Home() {
     target: heroRef,
     offset: ["start start", "end start"],
   });
-  const heroY = useTransform(scrollYProgress, [0, 1], [0, 200]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 250]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 0.9]);
 
   return (
-    <div>
+    <div className="relative">
       {/* ═══════════════════════════════════════
-          HERO — FULL SCREEN, NIKE STYLE
+          HERO — MASSIVE, CINEMATIC
           ═══════════════════════════════════════ */}
       <section ref={heroRef} className="relative flex min-h-screen items-center justify-center overflow-hidden">
-        {/* Animated background orbs */}
-        <div className="orb orb-gold absolute -top-32 left-[10%] h-[600px] w-[600px]" />
-        <div className="orb orb-purple absolute bottom-0 right-[5%] h-[500px] w-[500px]" style={{ animationDelay: "5s" }} />
+        {/* Neon orbs */}
+        <div className="orb orb-cyan absolute -top-20 left-[5%] h-[600px] w-[600px]" />
+        <div className="orb orb-purple absolute bottom-[-10%] right-[0%] h-[500px] w-[500px]" style={{ animationDelay: "5s" }} />
+        <div className="orb orb-gold absolute top-[40%] right-[20%] h-[300px] w-[300px]" style={{ animationDelay: "10s" }} />
 
-        {/* Rotating decorative rings */}
-        <div className="animate-rotate-slow pointer-events-none absolute h-[700px] w-[700px] rounded-full border border-white/[0.03] sm:h-[900px] sm:w-[900px]" />
-        <div className="animate-rotate-slow pointer-events-none absolute h-[500px] w-[500px] rounded-full border border-gold-400/[0.06] sm:h-[700px] sm:w-[700px]" style={{ animationDirection: "reverse", animationDuration: "40s" }} />
+        {/* Decorative rings */}
+        <div className="animate-rotate-slow pointer-events-none absolute h-[600px] w-[600px] rounded-full border border-white/[0.03] sm:h-[800px] sm:w-[800px]" />
+        <div className="animate-rotate-slow pointer-events-none absolute h-[400px] w-[400px] rounded-full border border-neon-cyan/[0.05] sm:h-[600px] sm:w-[600px]" style={{ animationDirection: "reverse", animationDuration: "45s" }} />
 
-        <motion.div style={{ y: heroY, opacity: heroOpacity }} className="relative z-10 mx-auto max-w-6xl px-4 text-center">
-          {/* Small tag */}
+        <motion.div style={{ y: heroY, opacity: heroOpacity, scale: heroScale }} className="relative z-10 mx-auto max-w-6xl px-4 text-center">
+          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="mb-8"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="mb-10"
           >
-            <span className="inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.05] px-5 py-2 backdrop-blur-sm">
+            <span className="tag-cyan inline-flex items-center gap-2.5">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-gold-400" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-cyan opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-neon-cyan" />
               </span>
-              <span className="text-[11px] font-semibold tracking-[0.25em] text-white/50 uppercase">
-                12-Week Program
-              </span>
+              12-Week Business Program
             </span>
           </motion.div>
 
           {/* GIANT HEADLINE */}
           <div className="overflow-hidden">
             <motion.h1
-              initial={{ y: 120 }}
+              initial={{ y: 150 }}
               animate={{ y: 0 }}
-              transition={{ delay: 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-[clamp(3rem,12vw,10rem)] font-black leading-[0.9] tracking-tighter text-white"
+              transition={{ delay: 0.1, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              className="text-[clamp(3.5rem,14vw,12rem)] font-black leading-[0.85] tracking-tighter text-white"
             >
               TRANSFORM
             </motion.h1>
           </div>
           <div className="overflow-hidden">
             <motion.h1
-              initial={{ y: 120 }}
+              initial={{ y: 150 }}
               animate={{ y: 0 }}
-              transition={{ delay: 0.2, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-gradient-gold text-[clamp(3rem,12vw,10rem)] font-black leading-[0.9] tracking-tighter"
+              transition={{ delay: 0.2, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              className="text-gradient-gold text-[clamp(3.5rem,14vw,12rem)] font-black leading-[0.85] tracking-tighter"
             >
               YOUR BUSINESS
             </motion.h1>
@@ -112,21 +112,22 @@ export default function Home() {
 
           {/* Subtitle */}
           <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 1 }}
-            className="mx-auto mt-8 max-w-md text-base text-white/35 sm:text-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.8 }}
+            className="mx-auto mt-10 max-w-lg text-lg text-white/50 sm:text-xl"
           >
-            Complete tasks. Upload proof. Earn points.<br />
-            Dominate the leaderboard.
+            Complete tasks. Upload proof. Earn points.
+            <br />
+            <span className="text-neon-cyan font-semibold">Dominate the leaderboard.</span>
           </motion.p>
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+            transition={{ delay: 0.9, duration: 0.8 }}
+            className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
           >
             <Link href="/auth/signup">
               <motion.span
@@ -135,8 +136,8 @@ export default function Home() {
                 className="btn-primary inline-flex items-center gap-3 px-10 py-5 text-sm tracking-[0.15em] uppercase"
               >
                 Get Started
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </motion.span>
             </Link>
@@ -146,7 +147,7 @@ export default function Home() {
                 whileTap={{ scale: 0.95 }}
                 className="btn-ghost inline-flex items-center gap-3 px-10 py-5 text-sm tracking-[0.15em] uppercase"
               >
-                Leaderboard
+                View Leaderboard
               </motion.span>
             </Link>
           </motion.div>
@@ -160,28 +161,28 @@ export default function Home() {
           className="absolute bottom-10 left-1/2 -translate-x-1/2"
         >
           <motion.div
-            animate={{ y: [0, 10, 0] }}
+            animate={{ y: [0, 12, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center gap-2"
+            className="flex flex-col items-center gap-3"
           >
-            <span className="text-[10px] font-medium tracking-[0.3em] text-white/20 uppercase">Scroll</span>
-            <div className="h-10 w-[1px] bg-gradient-to-b from-white/20 to-transparent" />
+            <span className="text-[10px] font-bold tracking-[0.3em] text-neon-cyan/40 uppercase">Scroll</span>
+            <div className="h-12 w-[2px] bg-gradient-to-b from-neon-cyan/30 to-transparent" />
           </motion.div>
         </motion.div>
       </section>
 
       {/* ═══════════════════════════════════════
-          MARQUEE TICKER
+          MARQUEE TICKER — NEON STYLE
           ═══════════════════════════════════════ */}
-      <div className="overflow-hidden border-y border-white/[0.06] py-5">
+      <div className="section-accent py-5">
         <div className="marquee">
           <div className="marquee-content">
             {Array(3).fill(null).map((_, rep) => (
-              <div key={rep} className="flex items-center gap-12 px-6">
+              <div key={rep} className="flex items-center gap-10 px-5">
                 {["LIFESTYLE", "GOALS", "STRATEGY", "MARKETING", "SALES", "CULTURE", "GROWTH", "LEADERSHIP"].map((word) => (
-                  <span key={`${rep}-${word}`} className="whitespace-nowrap text-sm font-bold tracking-[0.3em] text-white/10 uppercase">
+                  <span key={`${rep}-${word}`} className="whitespace-nowrap text-sm font-extrabold tracking-[0.3em] text-white/10 uppercase">
                     {word}
-                    <span className="mx-6 inline-block h-1.5 w-1.5 rounded-full bg-gold-400/30" />
+                    <span className="mx-5 inline-block h-2 w-2 rounded-full bg-neon-cyan/20" />
                   </span>
                 ))}
               </div>
@@ -191,22 +192,23 @@ export default function Home() {
       </div>
 
       {/* ═══════════════════════════════════════
-          STATS — FULL WIDTH, GIANT NUMBERS
+          STATS — BIG NEON NUMBERS
           ═══════════════════════════════════════ */}
-      <section className="py-32">
+      <section className="section-elevated py-32">
         <div className="mx-auto max-w-6xl px-4">
           <Reveal>
-            <div className="grid grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
               {[
-                { value: 12, suffix: "", label: "WEEKS" },
-                { value: 36, suffix: "", label: "TASKS" },
-                { value: 360, suffix: "", label: "TOTAL POINTS" },
+                { value: 12, label: "WEEKS", color: "text-neon-cyan", suffix: "" },
+                { value: 36, label: "TASKS", color: "text-neon-purple", suffix: "" },
+                { value: 360, label: "TOTAL POINTS", color: "text-gold-400", suffix: "" },
+                { value: 100, label: "COMPLETION", color: "text-neon-lime", suffix: "%" },
               ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-[clamp(3rem,8vw,8rem)] font-black leading-none tracking-tighter text-white">
+                <div key={stat.label} className="stat-card">
+                  <p className={`text-[clamp(2.5rem,6vw,5rem)] font-black leading-none tracking-tighter ${stat.color}`}>
                     <Counter target={stat.value} suffix={stat.suffix} />
                   </p>
-                  <p className="mt-3 text-[11px] font-semibold tracking-[0.3em] text-white/25 uppercase">
+                  <p className="mt-3 text-[11px] font-bold tracking-[0.25em] text-white/30 uppercase">
                     {stat.label}
                   </p>
                 </div>
@@ -217,62 +219,66 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════
-          HOW IT WORKS — CINEMATIC REVEAL
+          HOW IT WORKS — 3 STEPS
           ═══════════════════════════════════════ */}
       <section className="relative py-32">
-        <div className="orb orb-gold absolute right-0 top-0 h-[500px] w-[500px]" />
+        <div className="orb orb-gold absolute right-0 top-[20%] h-[400px] w-[400px]" />
 
         <div className="mx-auto max-w-6xl px-4">
           <Reveal>
-            <p className="mb-4 text-[11px] font-semibold tracking-[0.3em] text-gold-400/50 uppercase">
-              The Process
-            </p>
-            <h2 className="mb-20 text-5xl font-black tracking-tight text-white sm:text-7xl">
-              THREE STEPS.<br />
-              <span className="text-white/20">ZERO EXCUSES.</span>
+            <span className="tag-gold mb-6 inline-block">The Process</span>
+            <h2 className="mb-20 text-5xl font-black tracking-tight text-white sm:text-7xl lg:text-8xl">
+              THREE STEPS.
+              <br />
+              <span className="text-white/15">ZERO EXCUSES.</span>
             </h2>
           </Reveal>
 
-          <div className="space-y-8">
+          <div className="space-y-0">
             {[
               {
                 num: "01",
                 title: "IMPLEMENT",
                 desc: "Each week has specific tasks. Take action on your business. No theory — only execution.",
+                color: "text-neon-cyan",
+                border: "border-neon-cyan/10 hover:border-neon-cyan/30",
+                glow: "group-hover:shadow-[0_0_60px_rgba(0,240,255,0.06)]",
               },
               {
                 num: "02",
                 title: "PROVE IT",
                 desc: "Upload screenshots, documents, or recordings. Show the work. Evidence over words.",
+                color: "text-neon-purple",
+                border: "border-neon-purple/10 hover:border-neon-purple/30",
+                glow: "group-hover:shadow-[0_0_60px_rgba(191,90,242,0.06)]",
               },
               {
                 num: "03",
                 title: "DOMINATE",
                 desc: "Earn points. Climb the leaderboard. Compete with fellow entrepreneurs for the top spot.",
+                color: "text-gold-400",
+                border: "border-gold-400/10 hover:border-gold-400/30",
+                glow: "group-hover:shadow-[0_0_60px_rgba(255,186,0,0.06)]",
               },
             ].map((step, i) => (
-              <Reveal key={step.num}>
-                <div className="group flex items-start gap-8 border-t border-white/[0.06] py-10 sm:gap-16">
-                  <span className="text-5xl font-black text-white/[0.07] transition-colors duration-500 group-hover:text-gold-400/20 sm:text-7xl">
+              <Reveal key={step.num} delay={i * 0.1}>
+                <div className={`group flex items-start gap-6 border-t ${step.border} py-12 transition-all duration-500 sm:gap-12 ${step.glow}`}>
+                  <span className={`text-6xl font-black leading-none ${step.color} opacity-20 transition-opacity duration-500 group-hover:opacity-60 sm:text-8xl`}>
                     {step.num}
                   </span>
                   <div className="flex-1">
-                    <h3 className="mb-3 text-3xl font-black tracking-tight text-white transition-colors duration-500 group-hover:text-gold-400 sm:text-4xl">
+                    <h3 className={`mb-3 text-3xl font-black tracking-tight text-white transition-colors duration-500 group-hover:${step.color} sm:text-5xl`}>
                       {step.title}
                     </h3>
-                    <p className="max-w-md text-base text-white/30 sm:text-lg">
+                    <p className="max-w-md text-base text-white/40 sm:text-lg">
                       {step.desc}
                     </p>
                   </div>
-                  <motion.div
-                    initial={{ x: 0 }}
-                    whileHover={{ x: 10 }}
-                    className="hidden items-center self-center sm:flex"
-                  >
-                    <svg className="h-8 w-8 text-white/10 transition-colors duration-500 group-hover:text-gold-400/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+                  <div className="hidden self-center sm:block">
+                    <svg className={`h-8 w-8 text-white/10 transition-all duration-500 group-hover:${step.color} group-hover:translate-x-2`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
-                  </motion.div>
+                  </div>
                 </div>
               </Reveal>
             ))}
@@ -281,67 +287,65 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════
-          12-WEEK ROADMAP — HORIZONTAL SCROLL
+          12-WEEK ROADMAP
           ═══════════════════════════════════════ */}
-      <section className="relative py-32">
-        <div className="orb orb-purple absolute left-[10%] top-[30%] h-[500px] w-[500px]" />
+      <section className="section-elevated relative py-32">
+        <div className="orb orb-purple absolute left-[5%] top-[20%] h-[500px] w-[500px]" />
 
         <div className="mx-auto max-w-6xl px-4">
           <Reveal>
-            <p className="mb-4 text-[11px] font-semibold tracking-[0.3em] text-gold-400/50 uppercase">
-              The Roadmap
-            </p>
-            <h2 className="mb-4 text-5xl font-black tracking-tight text-white sm:text-7xl">
+            <span className="tag-cyan mb-6 inline-block">The Roadmap</span>
+            <h2 className="mb-4 text-5xl font-black tracking-tight text-white sm:text-7xl lg:text-8xl">
               12 WEEKS.
             </h2>
-            <p className="mb-16 text-xl text-white/20 sm:text-2xl">
+            <p className="mb-16 text-xl text-white/30">
               Every session takes you closer to mastery.
             </p>
           </Reveal>
         </div>
 
         {/* Horizontal scrollable cards */}
-        <div className="hide-scrollbar overflow-x-auto pb-4">
-          <div className="flex gap-4 px-4 sm:px-8" style={{ width: "max-content" }}>
+        <div className="hide-scrollbar overflow-x-auto pb-6">
+          <div className="flex gap-5 px-4 sm:px-8" style={{ width: "max-content" }}>
             {weeksData.map((week, i) => (
-              <Reveal key={week.week} className="flex-shrink-0">
+              <Reveal key={week.week} delay={i * 0.03}>
                 <motion.div
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
-                  className="glass group relative w-[300px] overflow-hidden p-7 sm:w-[340px]"
-                  style={{ transitionDelay: `${i * 40}ms` }}
+                  whileHover={{ y: -10, transition: { duration: 0.3 } }}
+                  className="card group relative w-[300px] p-6 sm:w-[340px]"
                 >
-                  {/* Big week number */}
-                  <span className="pointer-events-none absolute -right-4 -top-6 text-[100px] font-black leading-none text-white/[0.025] transition-all duration-500 group-hover:text-gold-400/[0.06]">
+                  {/* Background week number */}
+                  <span className="pointer-events-none absolute -right-3 -top-4 text-[90px] font-black leading-none text-white/[0.03] transition-all duration-500 group-hover:text-neon-cyan/[0.06]">
                     {String(week.week).padStart(2, "0")}
                   </span>
 
                   <div className="relative">
+                    {/* Top row */}
                     <div className="mb-5 flex items-center justify-between">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-gold-400/15 bg-gold-400/[0.07] text-sm font-black text-gold-400 transition-all group-hover:border-gold-400/30 group-hover:shadow-[0_0_25px_rgba(212,160,33,0.12)]">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-neon-cyan/20 bg-neon-cyan/[0.06] text-sm font-black text-neon-cyan">
                         {String(week.week).padStart(2, "0")}
                       </div>
-                      <span className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${
+                      <span className={`rounded-full px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider ${
                         week.sessionType === "Group Session"
-                          ? "bg-blue-500/10 text-blue-300/60"
-                          : "bg-purple-500/10 text-purple-300/60"
+                          ? "bg-neon-cyan/[0.06] text-neon-cyan/70 border border-neon-cyan/10"
+                          : "bg-neon-purple/[0.06] text-neon-purple/70 border border-neon-purple/10"
                       }`}>
                         {week.sessionType === "Group Session" ? "Group" : "1-on-1"}
                       </span>
                     </div>
 
-                    <h3 className="mb-2 text-lg font-bold tracking-tight text-white transition-colors group-hover:text-gold-300">
+                    <h3 className="mb-2 text-lg font-bold tracking-tight text-white transition-colors group-hover:text-neon-cyan">
                       {week.sessionName}
                     </h3>
-                    <p className="mb-5 text-sm leading-relaxed text-white/25">{week.focusArea}</p>
+                    <p className="mb-5 text-sm leading-relaxed text-white/30">{week.focusArea}</p>
 
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-gold-400/40">{week.maxPoints} points</span>
-                      <span className="text-xs text-white/15">{week.tasks.length} tasks</span>
+                    <div className="flex items-center justify-between border-t border-white/[0.04] pt-4">
+                      <span className="text-sm font-bold text-gold-400">{week.maxPoints} pts</span>
+                      <span className="text-xs font-medium text-white/20">{week.tasks.length} tasks</span>
                     </div>
                   </div>
 
                   {/* Bottom glow line */}
-                  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-gold-400/60 to-transparent transition-all duration-500 group-hover:w-full" />
+                  <div className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-neon-cyan via-neon-purple to-transparent transition-all duration-500 group-hover:w-full" />
                 </motion.div>
               </Reveal>
             ))}
@@ -350,31 +354,45 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════
-          CTA — FULL BLEED
+          CTA — GOLD ACCENT
           ═══════════════════════════════════════ */}
       <section className="relative overflow-hidden py-40">
-        <div className="orb orb-gold absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2" />
+        <div className="orb orb-gold absolute left-1/2 top-1/2 h-[700px] w-[700px] -translate-x-1/2 -translate-y-1/2" />
+        <div className="divider-gold absolute top-0 left-0 right-0" />
 
         <Reveal className="relative z-10 text-center px-4">
-          <h2 className="mb-6 text-5xl font-black tracking-tight text-white sm:text-7xl">
-            READY?
+          <h2 className="mb-4 text-6xl font-black tracking-tight text-white sm:text-8xl lg:text-9xl">
+            READY<span className="text-gold-400">?</span>
           </h2>
-          <p className="mx-auto mb-10 max-w-sm text-lg text-white/25">
+          <p className="mx-auto mb-12 max-w-md text-lg text-white/30">
             Join the mentorship program and prove what you&apos;re made of.
           </p>
-          <Link href="/auth/signup">
-            <motion.span
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-primary inline-flex items-center gap-3 px-12 py-5 text-sm tracking-[0.15em] uppercase"
-            >
-              Join Now
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
-              </svg>
-            </motion.span>
-          </Link>
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <Link href="/auth/signup">
+              <motion.span
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-primary inline-flex items-center gap-3 px-12 py-5 text-sm tracking-[0.15em] uppercase"
+              >
+                Join Now
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </motion.span>
+            </Link>
+            <Link href="/dashboard">
+              <motion.span
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-secondary inline-flex items-center gap-3 px-12 py-5 text-sm tracking-[0.15em] uppercase"
+              >
+                Go to Dashboard
+              </motion.span>
+            </Link>
+          </div>
         </Reveal>
+
+        <div className="divider-gold absolute bottom-0 left-0 right-0" />
       </section>
     </div>
   );
